@@ -1,0 +1,26 @@
+from sklearn.linear import Lasso
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_boston
+
+def pretty_print_linear(coefs,names = None,sort = False):
+    if names == None:
+        names = ["X%s"% x for x in range(len(coefs))]
+    lst = zip(coefs,names)
+    if sort:
+        lst = sorted(lst,key = lambda x:-np.abs(x[0]))
+    return " + ".join("%s * %s" % (round(coef,3),name) for coef,name in lst)
+    
+boston = load_boston()
+scaler = StandardScaler()
+X = scaler.fit_transform(boston['data'])
+y = boston['target']
+names = boston['feature_names']
+
+lasso = Lasso(alpha = 0.3)
+lasso.fit(X,y)
+
+ridge = Ridge(alpha = 10)
+ridge.fit(X,y)
+
+print "lasso model :\n",pretty_print_linear(lasso.coef_ ,names,sort =True)
+print "Ridge model :\n",pretty_print_linear(ridge.coef_,names,sort = True)
